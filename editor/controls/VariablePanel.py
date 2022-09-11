@@ -202,6 +202,10 @@ class VariableTable(CustomTable):
             
             if(colname == "MMS" or colname == "Location"):
 
+                # Create map file if doesn't exist
+                file = open('GeneratedMap.map', 'w')
+                file.close()
+
                 tableMap = []
                 label = ""
                 device = ""
