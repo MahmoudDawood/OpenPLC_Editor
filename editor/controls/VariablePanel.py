@@ -217,10 +217,19 @@ class VariableTable(CustomTable):
                             tableMap.append(str(getattr(row, "MMS") + " " + getattr(row, "Location")))
                 tableMap.sort()
 
+                # Select device name
+                with open("iecserver.map", 'r') as f:
+                    device = f.readline().split(' ')[1].split('/')[0]
+
                 ## Writing new map to file
-                # MMS - space - Address
+                # LABEL - space - Device - / - ((MMS - space - Address)) - line break
                 with open("GeneratedMap.map", 'w+') as f:
                     for line in tableMap:
+                        # Select label
+                        if 'Oper' in line:
+                            label = "CONTROL"
+                        else:
+                            label = "MONITOR"
                         f.write(label + " " + device + "/" + line + " \n")
 
             # ------------------------------------------------------------------------
