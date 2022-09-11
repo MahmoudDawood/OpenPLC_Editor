@@ -66,7 +66,7 @@ def GetVariableTableColnames(location):
             _("Location"),
             _("Initial Value"),
             _("Option"),
-            _("Documentation")]
+            _("MMS")] ###
     if not location:
         del cols[4]  # remove 'Location' column
     return cols
@@ -82,6 +82,15 @@ def GetOptions(constant=True, retain=True, non_retain=True):
     if non_retain:
         options.append(_("Non-Retain"))
     return options
+
+
+def GetMMS(): ### Creates MMS choices
+    _ = NoTranslate
+    mms = [""]
+    with open("iecserver.map", 'r') as f: # For Reading
+        for line in f:
+            mms.append(line.split(' ')[1].split('/')[1]) # [24:])
+    return mms
 
 
 def GetFilterChoiceTransfer():
@@ -122,6 +131,8 @@ class VariableTable(CustomTable):
         self.old_value = None
         self.OPTIONS_DICT = dict([(_(option), option)
                                   for option in GetOptions()])
+        self.MMS_DICT = dict([(_(mms), mms)
+                                  for mms in GetMMS()]) ### Allocates MMS Choices into a dictionary
         self.VARIABLE_CLASSES_DICT = dict([(_(_class), _class)
                                            for _class in GetFilterChoiceTransfer().itervalues()])
 
@@ -146,7 +157,8 @@ class VariableTable(CustomTable):
                     return "ARRAY [%s] OF %s" % (",".join(map("..".join, value[2])), value[1])
             if not isinstance(value, string_types):
                 value = str(value)
-            if colname in ["Class", "Option"]:
+                
+            if colname in ["Class", "Option", "MMS"]: ###
                 return _(value)
             return value
 
