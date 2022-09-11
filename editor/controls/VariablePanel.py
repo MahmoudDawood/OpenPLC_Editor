@@ -192,7 +192,34 @@ class VariableTable(CustomTable):
                 
             elif colname == "Initial Value":
                 colname = "InitialValue"
+
             setattr(self.data[row], colname, value)
+
+            ## Mapping function ###
+
+            # Regnerate map on location or address change
+            # Creates file if it doesn't exist
+            
+            if(colname == "MMS" or colname == "Location"):
+
+                tableMap = []
+                label = ""
+                device = ""
+
+                ## Reading valid values directly from table
+                for row in self.data:
+                    if(getattr(row, "MMS") and getattr(row, "Location")):
+                        if(getattr(row, "MMS") != "" and getattr(row, "Location") != ""):
+                            tableMap.append(str(getattr(row, "MMS") + " " + getattr(row, "Location")))
+                tableMap.sort()
+
+                ## Writing new map to file
+                # MMS - space - Address
+                with open("GeneratedMap.map", 'w+') as f:
+                    for line in tableMap:
+                        f.write(label + " " + device + "/" + line + " \n")
+
+            # ------------------------------------------------------------------------
 
     def GetOldValue(self):
         return self.old_value
