@@ -157,7 +157,7 @@ class VariableTable(CustomTable):
                     return "ARRAY [%s] OF %s" % (",".join(map("..".join, value[2])), value[1])
             if not isinstance(value, string_types):
                 value = str(value)
-                
+
             if colname in ["Class", "Option", "MMS"]: ###
                 return _(value)
             return value
@@ -165,15 +165,31 @@ class VariableTable(CustomTable):
     def SetValue(self, row, col, value):
         if col < len(self.colnames):
             colname = self.GetColLabelValue(col, False)
+
             if colname == "Name":
                 self.old_value = getattr(self.data[row], colname)
+            
             elif colname == "Class":
                 value = self.VARIABLE_CLASSES_DICT[value]
                 self.SetValueByName(row, "Option", CheckOptionForClass[value](self.GetValueByName(row, "Option")))
                 if value == "External":
                     self.SetValueByName(row, "InitialValue", "")
+            
             elif colname == "Option":
                 value = self.OPTIONS_DICT[value]
+
+            elif colname == "MMS": ### Stores the value picked by MMS dropdown
+                # Get all MMS values in table column
+                mmsColumn = []
+                for line in self.data:
+                    if(getattr(line, "MMS")):
+                        mmsColumn.append(str(getattr(line, "MMS")))
+                # If mms already used set it's value to empty string
+                if value in mmsColumn:
+                    value = self.MMS_DICT["".encode('utf-8')]
+                else: 
+                    value = self.MMS_DICT[value]
+                
             elif colname == "Initial Value":
                 colname = "InitialValue"
             setattr(self.data[row], colname, value)
